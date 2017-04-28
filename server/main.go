@@ -1,12 +1,14 @@
-package sundog
+package main
 
 import (
 	"fmt"
 	"image"
 	"image/color"
 	"image/png"
+	"log"
 	"net/http"
 
+	sundog "github.com/sporsh/gosundog"
 	"github.com/sporsh/gosundog/geometry"
 	"github.com/sporsh/gosundog/sampler"
 	"github.com/sporsh/gosundog/v3"
@@ -17,9 +19,9 @@ type PathTraceImage struct {
 	rect image.Rectangle
 }
 
-func NewPathTraceImage(g geometry.Intersectable, c Camera, width, height int) *PathTraceImage {
+func NewPathTraceImage(g geometry.Intersectable, c sundog.Camera, width, height int) *PathTraceImage {
 	return &PathTraceImage{
-		sampler.PathTraceSampler{},
+		sampler.PathTraceSampler{g, 0.0001},
 		image.Rect(0, 0, width, height),
 	}
 }
@@ -42,15 +44,17 @@ func main() {
 		w.Header().Set("Content-Type", "image/png")
 
 		g := geometry.Group{geometry.NewSphere(v3.V{0, 0, 0}, 100)}
-		c := Camera{
+		c := sundog.Camera{
 			v3.V{0, 0, -400},
 			geometry.Basis{v3.Y, v3.X, v3.Z},
 			1.0,
 		}
 		img := NewPathTraceImage(g, c, 640, 480)
-
+		log.Println("###", img)
 		if err := png.Encode(w, img); err != nil {
 			fmt.Fprintln(w, err)
 		}
 	})
+	log.Println("Starting server")
+	http.ListenAndServe("0.0.0.0:8080", nil)
 }
