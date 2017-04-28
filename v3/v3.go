@@ -5,6 +5,13 @@ import "math"
 // V is a three dimensional vector
 type V [3]float64
 
+var (
+	ZERO = V{0, 0, 0}
+	X    = V{1, 0, 0}
+	Y    = V{0, 1, 0}
+	Z    = V{0, 0, 1}
+)
+
 // Add computes the vector sum of two three dimensional vectors
 func Add(a, b V) V {
 	a[0] += b[0]

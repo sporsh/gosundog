@@ -1,4 +1,4 @@
-package main
+package sundog
 
 import (
 	"fmt"
@@ -42,7 +42,11 @@ func main() {
 		w.Header().Set("Content-Type", "image/png")
 
 		g := geometry.Group{geometry.NewSphere(v3.V{0, 0, 0}, 100)}
-		c := NewCamera()
+		c := Camera{
+			v3.V{0, 0, -400},
+			geometry.Basis{v3.Y, v3.X, v3.Z},
+			1.0,
+		}
 		img := NewPathTraceImage(g, c, 640, 480)
 
 		if err := png.Encode(w, img); err != nil {
