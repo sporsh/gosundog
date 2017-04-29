@@ -44,15 +44,15 @@ func (s Sphere) Intersect(r Ray, epsilon float64) (i Intersection, ok bool) {
 		}
 	}
 
-	// i.Point = v3.Add(
-	// 	r.Origin,
-	// 	v3.Scale(r.Direction, i.T),
-	// )
-	//
-	// i.Normal = v3.Normalize(v3.Sub(
-	// 	i.Point,
-	// 	s.Center,
-	// ))
+	i.Point = v3.Add(
+		r.Origin,
+		v3.Scale(r.Direction, i.T),
+	)
+
+	i.Normal = v3.Normalize(v3.Sub(
+		i.Point,
+		s.Center,
+	))
 
 	return i, true
 }

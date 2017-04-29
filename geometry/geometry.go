@@ -9,4 +9,5 @@ type Intersectable interface {
 type Intersection struct {
 	T             float64
 	Point, Normal v3.V
+	Geometry      Intersectable
 }
