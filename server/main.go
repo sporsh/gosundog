@@ -15,19 +15,27 @@ import (
 )
 
 type PathTraceImage struct {
-	sampler.PathTraceSampler
 	rect image.Rectangle
+	sampler.PathTraceSampler
+	camera sundog.Camera
 }
 
 func NewPathTraceImage(g geometry.Intersectable, c sundog.Camera, width, height int) *PathTraceImage {
 	return &PathTraceImage{
-		sampler.PathTraceSampler{g, 0.0001},
-		image.Rect(0, 0, width, height),
+		rect: image.Rect(0, 0, width, height),
+		PathTraceSampler: sampler.PathTraceSampler{
+			Geometry: g,
+			Epsilon:  0.0001,
+		},
+		camera: c,
 	}
 }
 
 func (img PathTraceImage) At(x, y int) color.Color {
-	r := geometry.Ray{}
+	r := img.camera.RayThrough(x, y)
+	if x == 25 && y == 25 {
+		log.Printf("%#v/n", r)
+	}
 	return img.Sample(r)
 }
 
@@ -40,20 +48,27 @@ func (img PathTraceImage) Bounds() image.Rectangle {
 }
 
 func main() {
+	width, height := 100, 100
+
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "image/png")
 
-		g := geometry.Group{geometry.NewSphere(v3.V{0, 0, 0}, 100)}
+		g := geometry.Group{geometry.NewSphere(v3.V{50, 50, 50}, 50)}
 		c := sundog.Camera{
-			v3.V{0, 0, -400},
-			geometry.Basis{v3.Y, v3.X, v3.Z},
-			1.0,
+			Origin: v3.V{50, 50, -50},
+			Basis: geometry.Basis{
+				X: v3.Y,
+				Y: v3.X,
+				Z: v3.Z,
+			},
+			Aperture: 1,
 		}
-		img := NewPathTraceImage(g, c, 640, 480)
-		log.Println("###", img)
+		img := NewPathTraceImage(g, c, width, height)
+		log.Println("Starting...")
 		if err := png.Encode(w, img); err != nil {
 			fmt.Fprintln(w, err)
 		}
+		log.Println("Done!")
 	})
 	log.Println("Starting server")
 	http.ListenAndServe("0.0.0.0:8080", nil)
