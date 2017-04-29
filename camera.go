@@ -18,10 +18,9 @@ type Camera struct {
 // that corresponds to the x, y screen space as seen from the camera
 func (c Camera) RayThrough(x, y int) geometry.Ray {
 	origin := c.RandomOriginWithinAperture()
-	target := c.Basis.ToLocal(
-		v3.Normalize(v3.V{float64(x), float64(y), 1}),
-	)
-	direction := v3.Sub(target, origin)
+	target := c.Basis.ToLocal(v3.V{float64(x), float64(y), 0})
+	direction := v3.Normalize(v3.Sub(target, origin))
+
 	return geometry.Ray{
 		Direction: direction,
 		Origin:    origin,
@@ -38,6 +37,9 @@ func (c Camera) LookAt(target v3.V) {
 // RandomOriginWithinAperture returns, as a three dimensional vector, a point
 // in world space that lies within the camera's aperture
 func (c Camera) RandomOriginWithinAperture() v3.V {
+	if c.Aperture == 0 {
+		return c.Origin
+	}
 	u1, u2 := rand.Float64(), rand.Float64()
 	r := u2 * c.Aperture
 	theta := u1 * 2 * math.Pi
