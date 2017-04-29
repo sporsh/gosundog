@@ -9,16 +9,20 @@ import (
 )
 
 type Camera struct {
-	Origin   v3.V
-	Basis    geometry.Basis
-	Aperture float64
+	Origin      v3.V
+	Basis       geometry.Basis
+	Aperture    float64
+	FocalLength float64
+	FieldOfView float64
+	AspectRatio float64
 }
 
 // RayThrough computes a ray in the world vector space
-// that corresponds to the x, y screen space as seen from the camera
-func (c Camera) RayThrough(x, y int) geometry.Ray {
+// that corresponds to the u, v screen coordinates between [-1, 1]
+// as seen in the visible field from of cacmera
+func (c Camera) RayThrough(u, v float64) geometry.Ray {
 	origin := c.RandomOriginWithinAperture()
-	target := c.Basis.ToLocal(v3.V{float64(x), float64(y), 0})
+	target := c.Basis.ToLocal(v3.Normalize(v3.V{u, v, c.FieldOfView}))
 	direction := v3.Normalize(v3.Sub(target, origin))
 
 	return geometry.Ray{

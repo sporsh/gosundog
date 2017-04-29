@@ -32,10 +32,10 @@ func NewPathTraceImage(g geometry.Intersectable, c sundog.Camera, width, height 
 }
 
 func (img PathTraceImage) At(x, y int) color.Color {
-	r := img.camera.RayThrough(x, y)
-	if x == 25 && y == 25 {
-		log.Printf("%#v/n", r)
-	}
+	r := img.camera.RayThrough(
+		2*float64(x)/float64(img.rect.Dx()-1)-1,
+		1-2*float64(y)/float64(img.rect.Dy()-1),
+	)
 	return img.Sample(r)
 }
 
@@ -53,15 +53,17 @@ func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "image/png")
 
-		g := geometry.Group{geometry.NewSphere(v3.V{50, 50, 50}, 50)}
+		g := geometry.Group{geometry.NewSphere(v3.V{0, 0, 2}, 1)}
 		c := sundog.Camera{
-			Origin: v3.V{50, 50, -50},
+			Origin: v3.V{0, 0, 0},
 			Basis: geometry.Basis{
 				X: v3.Y,
 				Y: v3.X,
 				Z: v3.Z,
 			},
-			Aperture: 1,
+			Aperture:    0,
+			FieldOfView: 1,
+			FocalLength: 10,
 		}
 		img := NewPathTraceImage(g, c, width, height)
 		log.Println("Starting...")
