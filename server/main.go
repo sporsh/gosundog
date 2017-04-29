@@ -53,7 +53,14 @@ func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "image/png")
 
-		g := geometry.Group{geometry.NewSphere(v3.V{0, 0, 2}, 1)}
+		g := geometry.Group{
+			sundog.Renderable{
+				Intersectable: geometry.NewSphere(v3.V{0, 0, 2}, 1),
+				Material: sundog.LambertianMaterial{
+					RadiantEmittance: v3.V{.5, .2, .5},
+				},
+			},
+		}
 		c := sundog.Camera{
 			Origin: v3.V{0, 0, 0},
 			Basis: geometry.Basis{
