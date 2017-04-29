@@ -57,9 +57,9 @@ func main() {
 		c := sundog.Camera{
 			Origin: v3.V{0, 0, 0},
 			Basis: geometry.Basis{
-				X: v3.Y,
-				Y: v3.X,
-				Z: v3.Z,
+				Tangent:   v3.Y,
+				Bitangent: v3.X,
+				Normal:    v3.Z,
 			},
 			Aperture:    0,
 			FieldOfView: 1,
