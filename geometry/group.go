@@ -7,6 +7,7 @@ func (g Group) Intersect(r Ray, epsilon float64) (closest Intersection, anyOk bo
 		if i, ok := intersectable.Intersect(r, epsilon); ok {
 			if !anyOk {
 				closest = i
+				anyOk = true
 			} else if i.T < closest.T {
 				closest = i
 			}
