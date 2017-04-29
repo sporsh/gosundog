@@ -34,6 +34,14 @@ func Dot(a, b V) float64 {
 	return a[0]*b[0] + a[1]*b[1] + a[2]*b[2]
 }
 
+// Hadamard returns the component wise product of two three dimensional vectors
+func Hadamard(a, b V) V {
+	a[0] *= b[0]
+	a[1] *= b[1]
+	a[2] *= b[2]
+	return a
+}
+
 // Len computes the length (magnitude) of a three dimensional vector
 func Len(v V) float64 {
 	return math.Sqrt(Len2(v))
@@ -42,6 +50,12 @@ func Len(v V) float64 {
 // Len2 computes the squared length (magnitude) of a three dimensional vector
 func Len2(v V) float64 {
 	return Dot(v, v)
+}
+
+// Negate returns a three dimensional vector in the opposite direction
+func Negate(v V) V {
+	v[0], v[1], v[2] = -v[0], -v[1], -v[2]
+	return v
 }
 
 // Normalize computes the unit length three dimensional vector
