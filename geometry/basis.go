@@ -21,3 +21,19 @@ func (b Basis) ToWorld(v v3.V) v3.V {
 		b.Tangent[2]*v[0] + b.Bitangent[2]*v[1] + b.Normal[2]*v[2],
 	}
 }
+
+func ArbritraryBasisForNormal(normal v3.V) Basis {
+	tangent := OrthogonalUnitVector(normal)
+	return Basis{
+		Tangent:   tangent,
+		Bitangent: v3.Cross(tangent, normal),
+		Normal:    normal,
+	}
+}
+
+func OrthogonalUnitVector(v v3.V) v3.V {
+	if v[0] == 0 {
+		return v3.V{1, 0, 0}
+	}
+	return v3.Normalize(v3.Cross(v3.Y, v))
+}
