@@ -15,23 +15,12 @@ type PathTraceSampler struct {
 }
 
 func (pt PathTraceSampler) Sample(r geometry.Ray) Sample {
-	radiance := v3.V{0, 0, 0}
-	numSamples := 100
-	for samples := 0; samples < numSamples; samples++ {
-		s := pt.trace(r)
-		radiance = v3.Add(radiance, s.Radiance)
-	}
-	return Sample{
-		Radiance: v3.Scale(radiance, 1.0/float64(numSamples)),
-	}
-}
-
-func (pt PathTraceSampler) trace(r geometry.Ray) Sample {
 	s := Sample{
 		Radiance: v3.ZERO,
 		Weight:   v3.V{1, 1, 1},
 	}
-	for bounces := 0; bounces < 10; bounces++ {
+	maxBounces := 4
+	for bounces := 0; bounces < maxBounces; bounces++ {
 		if i, ok := pt.Geometry.Intersect(r, pt.Epsilon); ok {
 			if obj, ok := i.Geometry.(sundog.Renderable); ok {
 				out := v3.Negate(r.Direction)
@@ -50,9 +39,12 @@ func (pt PathTraceSampler) trace(r geometry.Ray) Sample {
 				prob := obj.Material.ReflectancePDF(out, i.Basis)
 				pMax := math.Max(math.Max(prob[0], prob[1]), prob[2])
 
-				// if bouces > 2
-				if rand.Float64() <= pMax {
-					prob = v3.Scale(prob, 1/pMax)
+				if bounces > 2 {
+					if rand.Float64() <= pMax {
+						prob = v3.Scale(prob, 1/pMax)
+					} else {
+						break
+					}
 				}
 
 				s.Weight = v3.Hadamard(
@@ -64,6 +56,8 @@ func (pt PathTraceSampler) trace(r geometry.Ray) Sample {
 				r.Direction = in
 				r.Origin = i.Point
 			}
+		} else {
+			break
 		}
 	}
 	return s
