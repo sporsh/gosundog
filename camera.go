@@ -22,7 +22,14 @@ type Camera struct {
 // as seen in the visible field from of cacmera
 func (c Camera) RayThrough(u, v float64) geometry.Ray {
 	origin := c.RandomOriginWithinAperture()
-	target := c.Basis.ToLocal(v3.Normalize(v3.V{u, v, c.FieldOfView}))
+	target := v3.Add(
+		c.Origin,
+		c.Basis.ToLocal(v3.V{
+			u * c.FieldOfView * c.FocalLength,
+			v * c.FieldOfView * c.FocalLength,
+			c.FocalLength,
+		}),
+	)
 	direction := v3.Normalize(v3.Sub(target, origin))
 
 	return geometry.Ray{

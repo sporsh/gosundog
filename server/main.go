@@ -78,7 +78,7 @@ func main() {
 			},
 			Aperture:    0,
 			FieldOfView: 1,
-			FocalLength: 10,
+			FocalLength: 2,
 		}
 		img := NewPathTraceImage(g, c, width, height)
 		log.Println("Starting...")
