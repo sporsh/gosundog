@@ -55,17 +55,25 @@ func main() {
 
 		g := geometry.Group{
 			sundog.Renderable{
-				Intersectable: geometry.NewSphere(v3.V{0, 0, 2}, 1),
+				Intersectable: geometry.NewSphere(v3.V{-.5, 0, 2}, 1),
 				Material: sundog.LambertianMaterial{
-					RadiantEmittance: v3.V{.5, .2, .5},
+					RadiantEmittance: v3.ZERO,
+					Reflectivity:     v3.V{.8, .5, .5},
+				},
+			},
+			sundog.Renderable{
+				Intersectable: geometry.NewSphere(v3.V{1, 0, 2}, 1),
+				Material: sundog.LambertianMaterial{
+					RadiantEmittance: v3.V{1, 1, 1},
+					Reflectivity:     v3.ZERO,
 				},
 			},
 		}
 		c := sundog.Camera{
 			Origin: v3.V{0, 0, 0},
 			Basis: geometry.Basis{
-				Tangent:   v3.Y,
-				Bitangent: v3.X,
+				Tangent:   v3.X,
+				Bitangent: v3.Y,
 				Normal:    v3.Z,
 			},
 			Aperture:    0,
