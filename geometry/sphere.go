@@ -54,5 +54,7 @@ func (s Sphere) Intersect(r Ray, epsilon float64) (i Intersection, ok bool) {
 		s.Center,
 	))
 
+	i.Basis = ArbritraryBasisForNormal(i.Normal)
+
 	return i, true
 }
