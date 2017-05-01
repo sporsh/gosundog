@@ -6,6 +6,7 @@ import (
 	"image/color"
 	"image/png"
 	"log"
+	"math/rand"
 	"net/http"
 
 	sundog "github.com/sporsh/gosundog"
@@ -32,19 +33,17 @@ func NewPathTraceImage(g geometry.Intersectable, c sundog.Camera, width, height 
 }
 
 func (img PathTraceImage) At(x, y int) color.Color {
-	u := 2*float64(x)/float64(img.rect.Dx()-1) - 1
-	v := 1 - 2*float64(y)/float64(img.rect.Dy()-1)
 	radiance := v3.V{0, 0, 0}
-	numSamples := 100
+	numSamples := 50
 	for sample := 0; sample < numSamples; sample++ {
+		u := 2*(float64(x)+rand.Float64())/float64(img.rect.Dx()-1) - 1
+		v := 1 - 2*(float64(y)+rand.Float64())/float64(img.rect.Dy()-1)
 		r := img.camera.RayThrough(u, v)
-		radiance = v3.Add(
-			radiance,
-			img.Sample(r).Radiance,
-		)
+		sampleRadiance := img.Sample(r).Radiance
+		radiance.Add(&sampleRadiance)
 	}
 	return sampler.Sample{
-		Radiance: v3.Scale(radiance, 1.0/float64(numSamples)),
+		Radiance: *radiance.Scale(1.0 / float64(numSamples)),
 	}
 }
 
@@ -57,21 +56,19 @@ func (img PathTraceImage) Bounds() image.Rectangle {
 }
 
 func main() {
-	width, height := 300, 300
+	width, height := 400, 400
 
 	lightMaterial := sundog.LambertianMaterial{
 		RadiantEmittance: v3.V{20, 20, 20},
 	}
 
 	whiteMaterial := sundog.LambertianMaterial{
-		// RadiantEmittance: v3.V{.1, .1, .1},
 		Reflectivity: v3.V{0.8, 0.8, 0.8},
 	}
 	redMaterial := sundog.LambertianMaterial{
 		Reflectivity: v3.V{0.75, 0.25, 0.25},
 	}
 	greenMaterial := sundog.LambertianMaterial{
-		// RadiantEmittance: v3.V{.1, .1, .1},
 		Reflectivity: v3.V{0.25, 0.75, 0.25},
 	}
 
@@ -79,35 +76,44 @@ func main() {
 		w.Header().Set("Content-Type", "image/png")
 
 		g := geometry.Group{
-			sundog.Renderable{
-				Intersectable: geometry.NewSphere(v3.V{0, -0.25, 0}, .25),
-				Material:      whiteMaterial,
-			},
 
-			// Cornell box
 			sundog.Renderable{
-				Intersectable: geometry.NewPlane(v3.V{1, 0, 0}, -1),
+				Intersectable: geometry.NewSphere(v3.V{-0.55, -0.5, 0}, 0.25),
 				Material:      redMaterial,
 			},
 			sundog.Renderable{
-				Intersectable: geometry.NewPlane(v3.V{-1, 0, 0}, -1),
-				Material:      greenMaterial,
-			},
-			sundog.Renderable{
-				Intersectable: geometry.NewPlane(v3.V{0, 0, -1}, -1),
+				Intersectable: geometry.NewSphere(v3.V{0, -0.5, 0.25}, .25),
 				Material:      whiteMaterial,
 			},
+			sundog.Renderable{
+				Intersectable: geometry.NewSphere(v3.V{0.55, -0.5, 0}, 0.25),
+				Material:      greenMaterial,
+			},
+			// Cornell box
+			// sundog.Renderable{
+			// 	Intersectable: geometry.NewPlane(v3.V{1, 0, 0}, -1),
+			// 	Material:      redMaterial,
+			// },
+			// sundog.Renderable{
+			// 	Intersectable: geometry.NewPlane(v3.V{-1, 0, 0}, -1),
+			// 	Material:      greenMaterial,
+			// },
+			// sundog.Renderable{
+			// 	Intersectable: geometry.NewPlane(v3.V{0, 0, -1}, -1),
+			// 	Material:      whiteMaterial,
+			// },
 			sundog.Renderable{
 				Intersectable: geometry.NewPlane(v3.V{0, 1, 0}, -1),
 				Material:      whiteMaterial,
 			},
-			sundog.Renderable{
-				Intersectable: geometry.NewPlane(v3.V{0, -1, 0}, -1),
-				Material:      whiteMaterial,
-			},
+			// sundog.Renderable{
+			// 	Intersectable: geometry.NewPlane(v3.V{0, -1, 0}, -1),
+			// 	Material:      whiteMaterial,
+			// },
 			// Light
+
 			sundog.Renderable{
-				Intersectable: geometry.NewSphere(v3.V{0, 1, 0}, 0.2),
+				Intersectable: geometry.NewSphere(v3.V{0, 1, 0}, 0.25),
 				Material:      lightMaterial,
 			},
 		}
@@ -118,7 +124,8 @@ func main() {
 				Bitangent: v3.Y,
 				Normal:    v3.Z,
 			},
-			Aperture:    0.05,
+			Aperture: 0,
+			// Aperture:    0.05,
 			FieldOfView: 1,
 			FocalLength: 2,
 		}

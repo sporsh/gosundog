@@ -18,8 +18,8 @@ func NewSphere(c v3.V, r float64) Sphere {
 
 func (s Sphere) Intersect(r Ray, epsilon float64) (i Intersection, ok bool) {
 	m := v3.Sub(r.Origin, s.Center)
-	b := v3.Dot(m, r.Direction)
-	c := v3.Len2(m) - s.radius2
+	b := v3.Dot(&m, &r.Direction)
+	c := m.Len2() - s.radius2
 
 	if c > 0 && b > 0 {
 		// Miss: ray origin outside sphere, and pointing away from origin
@@ -44,10 +44,7 @@ func (s Sphere) Intersect(r Ray, epsilon float64) (i Intersection, ok bool) {
 		}
 	}
 
-	i.Point = v3.Add(
-		r.Origin,
-		v3.Scale(r.Direction, i.T),
-	)
+	i.Point = *r.Direction.Scale(i.T).Add(&r.Origin)
 
 	i.Normal = v3.Normalize(v3.Sub(
 		i.Point,

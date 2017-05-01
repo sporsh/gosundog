@@ -19,19 +19,16 @@ func (pt PathTraceSampler) Sample(r geometry.Ray) Sample {
 		Radiance: v3.ZERO,
 		Weight:   v3.V{1, 1, 1},
 	}
-	maxBounces := 4
+	maxBounces := 10
 	for bounces := 0; bounces < maxBounces; bounces++ {
 		if i, ok := pt.Geometry.Intersect(r, pt.Epsilon); ok {
 			if obj, ok := i.Geometry.(sundog.Renderable); ok {
 				out := v3.Negate(r.Direction)
 
-				s.Radiance = v3.Add(
-					s.Radiance,
-					v3.Hadamard(
-						s.Weight,
-						obj.Material.Emittance(out, i.Basis),
-					),
-				)
+				emittance := obj.Material.Emittance(out, i.Basis)
+				s.Radiance.Add(emittance.Hadamard(&s.Weight))
+				// emittance := obj.Material.Emittance(out, i.Basis)
+				// s.Radiance.Add(emittance.Hadamard(&s.Weight))
 
 				// Russian roulette
 
@@ -41,16 +38,13 @@ func (pt PathTraceSampler) Sample(r geometry.Ray) Sample {
 
 				if bounces > 2 {
 					if rand.Float64() <= pMax {
-						prob = v3.Scale(prob, 1/pMax)
+						prob.Scale(1 / pMax)
 					} else {
 						break
 					}
 				}
 
-				s.Weight = v3.Hadamard(
-					prob,
-					s.Weight,
-				)
+				s.Weight.Hadamard(&prob)
 
 				in := obj.Material.Reflect(out, i.Basis)
 				r.Direction = in

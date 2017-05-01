@@ -21,7 +21,7 @@ type LambertianMaterial struct {
 }
 
 func (m LambertianMaterial) BRDF(in, out v3.V, basis geometry.Basis) v3.V {
-	return v3.Scale(m.Reflectivity, math.Pi)
+	return *m.Reflectivity.Scale(math.Pi)
 }
 
 // Emittance returns the radiant emittance (or exitance) in a given outgoing direction
