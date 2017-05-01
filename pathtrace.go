@@ -1,10 +1,9 @@
-package sampler
+package sundog
 
 import (
 	"math"
 	"math/rand"
 
-	sundog "github.com/sporsh/gosundog"
 	"github.com/sporsh/gosundog/geometry"
 	"github.com/sporsh/gosundog/v3"
 )
@@ -22,7 +21,7 @@ func (pt PathTraceSampler) Sample(r geometry.Ray) Sample {
 	maxBounces := 10
 	for bounces := 0; bounces < maxBounces; bounces++ {
 		if i, ok := pt.Geometry.Intersect(r, pt.Epsilon); ok {
-			if obj, ok := i.Geometry.(sundog.Renderable); ok {
+			if obj, ok := i.Geometry.(Renderable); ok {
 				out := v3.Negate(r.Direction)
 
 				emittance := obj.Material.Emittance(out, i.Basis)

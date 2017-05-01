@@ -11,20 +11,19 @@ import (
 
 	sundog "github.com/sporsh/gosundog"
 	"github.com/sporsh/gosundog/geometry"
-	"github.com/sporsh/gosundog/sampler"
 	"github.com/sporsh/gosundog/v3"
 )
 
 type PathTraceImage struct {
 	rect image.Rectangle
-	sampler.PathTraceSampler
+	sundog.PathTraceSampler
 	camera sundog.Camera
 }
 
 func NewPathTraceImage(g geometry.Intersectable, c sundog.Camera, width, height int) *PathTraceImage {
 	return &PathTraceImage{
 		rect: image.Rect(0, 0, width, height),
-		PathTraceSampler: sampler.PathTraceSampler{
+		PathTraceSampler: sundog.PathTraceSampler{
 			Geometry: g,
 			Epsilon:  0.001,
 		},
@@ -42,7 +41,7 @@ func (img PathTraceImage) At(x, y int) color.Color {
 		sampleRadiance := img.Sample(r).Radiance
 		radiance.Add(&sampleRadiance)
 	}
-	return sampler.Sample{
+	return sundog.Sample{
 		Radiance: *radiance.Scale(1.0 / float64(numSamples)),
 	}
 }
