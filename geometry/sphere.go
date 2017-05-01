@@ -46,12 +46,10 @@ func (s Sphere) Intersect(r Ray, epsilon float64) (i Intersection, ok bool) {
 
 	i.Point = *r.Direction.Scale(i.T).Add(&r.Origin)
 
-	i.Normal = v3.Normalize(v3.Sub(
+	i.Basis = ArbritraryBasisForNormal(v3.Normalize(v3.Sub(
 		i.Point,
 		s.Center,
-	))
-
-	i.Basis = ArbritraryBasisForNormal(i.Normal)
+	)))
 
 	return i, true
 }

@@ -20,7 +20,7 @@ type Camera struct {
 // RayThrough computes a ray in the world vector space
 // that corresponds to the u, v screen coordinates between [-1, 1]
 // as seen in the visible field from of cacmera
-func (c Camera) RayThrough(u, v float64) geometry.Ray {
+func (c *Camera) RayThrough(u, v float64) geometry.Ray {
 	origin := c.RandomOriginWithinAperture()
 	target := v3.Add(
 		c.Origin,
@@ -41,13 +41,13 @@ func (c Camera) RayThrough(u, v float64) geometry.Ray {
 }
 
 // LookAt reorients the camera's basis so that it is looking straight at a target
-func (c Camera) LookAt(target v3.V) {
+func (c *Camera) LookAt(target v3.V) {
 
 }
 
 // RandomOriginWithinAperture returns, as a three dimensional vector, a point
 // in world space that lies within the camera's aperture
-func (c Camera) RandomOriginWithinAperture() v3.V {
+func (c *Camera) RandomOriginWithinAperture() v3.V {
 	if c.Aperture == 0 {
 		return c.Origin
 	}
