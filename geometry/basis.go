@@ -20,9 +20,9 @@ func (b Basis) ToLocal(v v3.V) v3.V {
 
 func (b Basis) ToWorld(v v3.V) v3.V {
 	return v3.V{
-		b.Tangent[0]*v[0] + b.Normal[0]*v[1] + b.Bitangent[0]*v[2],
-		b.Tangent[1]*v[0] + b.Normal[1]*v[1] + b.Bitangent[1]*v[2],
-		b.Tangent[2]*v[0] + b.Normal[2]*v[1] + b.Bitangent[2]*v[2],
+		b.Tangent.X*v.X + b.Normal.X*v.Y + b.Bitangent.X*v.Z,
+		b.Tangent.Y*v.X + b.Normal.Y*v.Y + b.Bitangent.Y*v.Z,
+		b.Tangent.Z*v.X + b.Normal.Z*v.Y + b.Bitangent.Z*v.Z,
 	}
 }
 
@@ -36,9 +36,9 @@ func ArbritraryBasisForNormal(normal v3.V) Basis {
 }
 
 func OrthogonalUnitVector(v v3.V) v3.V {
-	if v[0] == 0 {
+	if v.X == 0 {
 		return v3.V{1, 0, 0}
 	}
-	f := math.Sqrt(v[0]*v[0] + v[2]*v[2])
-	return v3.V{v[2] * f, 0, -v[0] * f}
+	f := math.Sqrt(v.X*v.X + v.Z*v.Z)
+	return v3.V{v.Z * f, 0, -v.X * f}
 }

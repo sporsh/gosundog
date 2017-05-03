@@ -3,7 +3,9 @@ package v3
 import "math"
 
 // V is a three dimensional vector
-type V [3]float64
+type V struct {
+	X, Y, Z float64
+}
 
 var (
 	ZERO = V{0, 0, 0}
@@ -14,27 +16,27 @@ var (
 
 // Add adds the three dimensional vector b to a
 func (a *V) Add(b *V) *V {
-	a[0] += b[0]
-	a[1] += b[1]
-	a[2] += b[2]
+	a.X += b.X
+	a.Y += b.Y
+	a.Z += b.Z
 	return a
 }
 
 func (a *V) Dot(b *V) float64 {
-	return a[0]*b[0] + a[1]*b[1] + a[2]*b[2]
+	return a.X*b.X + a.Y*b.Y + a.Z*b.Z
 }
 
 func (a *V) Hadamard(b *V) *V {
-	a[0] *= b[0]
-	a[1] *= b[1]
-	a[2] *= b[2]
+	a.X *= b.X
+	a.Y *= b.Y
+	a.Z *= b.Z
 	return a
 }
 
 func (v *V) Scale(f float64) *V {
-	v[0] *= f
-	v[1] *= f
-	v[2] *= f
+	v.X *= f
+	v.Y *= f
+	v.Z *= f
 	return v
 }
 
@@ -43,7 +45,7 @@ func (v *V) Len() float64 {
 }
 
 func (v *V) Len2() float64 {
-	return v[0]*v[0] + v[1]*v[1] + v[2]*v[2]
+	return v.X*v.X + v.Y*v.Y + v.Z*v.Z
 }
 
 func (v *V) Normalize() *V {
@@ -51,9 +53,9 @@ func (v *V) Normalize() *V {
 }
 
 func (a *V) Sub(b *V) *V {
-	a[0] -= b[0]
-	a[1] -= b[1]
-	a[2] -= b[2]
+	a.X -= b.X
+	a.Y -= b.Y
+	a.Z -= b.Z
 	return a
 }
 
@@ -65,15 +67,15 @@ func Add(a, b V) V {
 // Cross computes the vector cross product of two three dimensional vectors
 func Cross(a, b V) V {
 	return V{
-		a[1]*b[2] - a[2]*b[1],
-		a[2]*b[0] - a[0]*b[2],
-		a[0]*b[1] - a[1]*b[0],
+		a.Y*b.Z - a.Z*b.Y,
+		a.Z*b.X - a.X*b.Z,
+		a.X*b.Y - a.Y*b.X,
 	}
 }
 
 // Dot computes the dod product of two three dimensional vectors
 func Dot(a, b *V) float64 {
-	return a[0]*b[0] + a[1]*b[1] + a[2]*b[2]
+	return a.X*b.X + a.Y*b.Y + a.Z*b.Z
 }
 
 // Hadamard returns the component wise product of two three dimensional vectors
@@ -93,7 +95,7 @@ func Len2(v V) float64 {
 
 // Negate returns a three dimensional vector in the opposite direction
 func Negate(v V) V {
-	v[0], v[1], v[2] = -v[0], -v[1], -v[2]
+	v.X, v.Y, v.Z = -v.X, -v.Y, -v.Z
 	return v
 }
 

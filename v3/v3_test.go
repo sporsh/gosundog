@@ -39,8 +39,34 @@ func TestAdd(t *testing.T) {
 
 }
 
-// func BenchmarkAdd(b *testing.B) {
-// 	for i := 0; i < b.N; i++ {
-// 		_ = v3.V{1, 2, 3}
-// 	}
-// }
+type VS struct {
+	X, Y, Z float64
+}
+
+func (a VS) Add(b VS) VS {
+	a.X += b.X
+	a.Y += b.Y
+	a.Z += b.Z
+	return a
+}
+
+type VA [3]float64
+
+func (a VA) Add(b VA) VA {
+	a[0] += b[0]
+	a[1] += b[1]
+	a[2] += b[2]
+	return a
+}
+
+func BenchmarkStruct(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		_ = VS{1, 2, 3}.Add(VS{4, 5, 6})
+	}
+}
+
+func BenchmarkArray(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		_ = VA{1, 2, 3}.Add(VA{4, 5, 6})
+	}
+}
