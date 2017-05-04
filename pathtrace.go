@@ -59,7 +59,7 @@ type PathTraceSampler struct {
 	Epsilon  float64
 }
 
-func (pt PathTraceSampler) Sample(r geometry.Ray) Sample {
+func (pt *PathTraceSampler) Sample(r geometry.Ray) Sample {
 	s := Sample{
 		Radiance: v3.ZERO,
 		Weight:   v3.V{X: 1, Y: 1, Z: 1},

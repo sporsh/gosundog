@@ -8,16 +8,16 @@ type Plane struct {
 	basis  Basis
 }
 
-func NewPlane(n v3.V, d float64) Plane {
+func NewPlane(n v3.V, d float64) *Plane {
 	basis := ArbritraryBasisForNormal(n)
-	return Plane{
+	return &Plane{
 		Normal: n,
 		D:      d,
 		basis:  basis,
 	}
 }
 
-func (p Plane) Intersect(r *Ray, epsilon float64) (i Intersection, ok bool) {
+func (p *Plane) Intersect(r *Ray, epsilon float64) (i Intersection, ok bool) {
 	i.T = (p.D - v3.Dot(p.Normal, r.Origin)) / v3.Dot(p.Normal, r.Direction)
 	if i.T > epsilon {
 		// i.Point = *r.Direction.Scale(i.T).Add(&r.Origin)
