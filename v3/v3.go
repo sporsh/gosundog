@@ -61,7 +61,10 @@ func (a *V) Sub(b *V) *V {
 
 // Add computes the vector sum of two three dimensional vectors
 func Add(a, b V) V {
-	return *a.Add(&b)
+	a.X += b.X
+	a.Y += b.Y
+	a.Z += b.Z
+	return a
 }
 
 // Cross computes the vector cross product of two three dimensional vectors
@@ -74,13 +77,16 @@ func Cross(a, b V) V {
 }
 
 // Dot computes the dod product of two three dimensional vectors
-func Dot(a, b *V) float64 {
+func Dot(a, b V) float64 {
 	return a.X*b.X + a.Y*b.Y + a.Z*b.Z
 }
 
 // Hadamard returns the component wise product of two three dimensional vectors
 func Hadamard(a, b V) V {
-	return *a.Hadamard(&b)
+	a.X *= b.X
+	a.Y *= b.Y
+	a.Z *= b.Z
+	return a
 }
 
 // Len computes the length (magnitude) of a three dimensional vector
@@ -90,7 +96,7 @@ func Len(v V) float64 {
 
 // Len2 computes the squared length (magnitude) of a three dimensional vector
 func Len2(v V) float64 {
-	return Dot(&v, &v)
+	return Dot(v, v)
 }
 
 // Negate returns a three dimensional vector in the opposite direction
@@ -106,10 +112,16 @@ func Normalize(v V) V {
 
 // Scale comutes a three dimensional vector scaled by a factor
 func Scale(v V, f float64) V {
-	return *v.Scale(f)
+	v.X *= f
+	v.Y *= f
+	v.Z *= f
+	return v
 }
 
 // Sub computes the vector difference between two three dimensional vectors
 func Sub(a, b V) V {
-	return *a.Sub(&b)
+	a.X -= b.X
+	a.Y -= b.Y
+	a.Z -= b.Z
+	return a
 }

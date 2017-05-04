@@ -12,9 +12,9 @@ type Basis struct {
 
 func (b Basis) ToLocal(v v3.V) v3.V {
 	return v3.V{
-		v3.Dot(&v, &b.Tangent),
-		v3.Dot(&v, &b.Bitangent),
-		v3.Dot(&v, &b.Normal),
+		v3.Dot(v, b.Tangent),
+		v3.Dot(v, b.Bitangent),
+		v3.Dot(v, b.Normal),
 	}
 }
 
