@@ -16,7 +16,7 @@ func NewSphere(c v3.V, r float64) Sphere {
 	return Sphere{c, r, r * r}
 }
 
-func (s Sphere) Intersect(r Ray, epsilon float64) (i Intersection, ok bool) {
+func (s Sphere) Intersect(r *Ray, epsilon float64) (i Intersection, ok bool) {
 	m := v3.Sub(r.Origin, s.Center)
 	b := v3.Dot(m, r.Direction)
 	c := v3.Len2(m) - s.radius2

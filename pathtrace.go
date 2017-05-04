@@ -29,7 +29,7 @@ func NewPathTraceImage(g geometry.Intersectable, c Camera, width, height int) *P
 
 func (img *PathTraceImage) At(x, y int) color.Color {
 	radiance := v3.V{X: 0, Y: 0, Z: 0}
-	numSamples := 250
+	numSamples := 50
 	for sample := 0; sample < numSamples; sample++ {
 		u := 2*(float64(x)+rand.Float64())/float64(img.rect.Dx()-1) - 1
 		v := 1 - 2*(float64(y)+rand.Float64())/float64(img.rect.Dy()-1)
@@ -66,7 +66,7 @@ func (pt PathTraceSampler) Sample(r geometry.Ray) Sample {
 	}
 	maxBounces := 6
 	for bounces := 0; bounces < maxBounces; bounces++ {
-		if i, ok := pt.Geometry.Intersect(r, pt.Epsilon); ok {
+		if i, ok := pt.Geometry.Intersect(&r, pt.Epsilon); ok {
 			if obj, ok := i.Geometry.(Renderable); ok {
 				out := v3.Negate(r.Direction)
 
