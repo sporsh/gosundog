@@ -19,7 +19,7 @@ func NewPlane(n v3.V, d float64) *Plane {
 
 func (p *Plane) Intersect(r *Ray, epsilon float64) (i Intersection, ok bool) {
 	i.T = (p.D - v3.Dot(p.Normal, r.Origin)) / v3.Dot(p.Normal, r.Direction)
-	if i.T > epsilon {
+	if i.T > epsilon && i.T > r.TMin && i.T < r.TMax {
 		// i.Point = *r.Direction.Scale(i.T).Add(&r.Origin)
 		i.Point = v3.Add(r.Origin, v3.Scale(r.Direction, i.T))
 		i.Basis = p.basis

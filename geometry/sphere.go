@@ -44,6 +44,10 @@ func (s *Sphere) Intersect(r *Ray, epsilon float64) (i Intersection, ok bool) {
 		}
 	}
 
+	if i.T < r.TMin || i.T > r.TMax {
+		return i, false
+	}
+
 	i.Point = v3.Add(r.Origin, v3.Scale(r.Direction, i.T))
 	// i.Point = *r.Direction.Scale(i.T).Add(&r.Origin)
 
