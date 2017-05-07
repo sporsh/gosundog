@@ -59,14 +59,14 @@ type PathTraceSampler struct {
 	Epsilon  float64
 }
 
-func (pt *PathTraceSampler) Sample(r geometry.Ray) Sample {
+func (pt *PathTraceSampler) Sample(r *geometry.Ray) Sample {
 	s := Sample{
 		Radiance: v3.ZERO,
 		Weight:   v3.V{X: 1, Y: 1, Z: 1},
 	}
 	maxBounces := 6
 	for bounces := 0; bounces < maxBounces; bounces++ {
-		if i, ok := pt.Geometry.Intersect(&r, pt.Epsilon); ok {
+		if i, ok := pt.Geometry.Intersect(r, pt.Epsilon); ok {
 			if obj, ok := i.Geometry.(Renderable); ok {
 				out := v3.Negate(r.Direction)
 
