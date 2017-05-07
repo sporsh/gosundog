@@ -14,50 +14,6 @@ var (
 	Z    = V{0, 0, 1}
 )
 
-// Add adds the three dimensional vector b to a
-func (a *V) Add(b *V) *V {
-	a.X += b.X
-	a.Y += b.Y
-	a.Z += b.Z
-	return a
-}
-
-func (a *V) Dot(b *V) float64 {
-	return a.X*b.X + a.Y*b.Y + a.Z*b.Z
-}
-
-func (a *V) Hadamard(b *V) *V {
-	a.X *= b.X
-	a.Y *= b.Y
-	a.Z *= b.Z
-	return a
-}
-
-func (v *V) Scale(f float64) *V {
-	v.X *= f
-	v.Y *= f
-	v.Z *= f
-	return v
-}
-
-func (v *V) Len() float64 {
-	return math.Sqrt(v.Len2())
-}
-
-func (v *V) Len2() float64 {
-	return v.X*v.X + v.Y*v.Y + v.Z*v.Z
-}
-
-func (v *V) Normalize() *V {
-	return v.Scale(1 / v.Len())
-}
-
-func (a *V) Sub(b *V) *V {
-	a.X -= b.X
-	a.Y -= b.Y
-	a.Z -= b.Z
-	return a
-}
 
 // Add computes the vector sum of two three dimensional vectors
 func Add(a, b V) V {

@@ -34,11 +34,11 @@ func (img *PathTraceImage) At(x, y int) color.Color {
 		u := 2*(float64(x)+rand.Float64())/float64(img.rect.Dx()-1) - 1
 		v := 1 - 2*(float64(y)+rand.Float64())/float64(img.rect.Dy()-1)
 		r := img.camera.RayThrough(u, v)
-		sampleRadiance := img.Sample(r).Radiance
-		radiance.Add(&sampleRadiance)
+		sampleRadiance := img.Sample(&r).Radiance
+		radiance = v3.Add(radiance, sampleRadiance)
 	}
 	return Sample{
-		Radiance: *radiance.Scale(1.0 / float64(numSamples)),
+		Radiance: v3.Scale(radiance, 1.0/float64(numSamples)),
 	}
 }
 
@@ -71,9 +71,7 @@ func (pt *PathTraceSampler) Sample(r *geometry.Ray) Sample {
 				out := v3.Negate(r.Direction)
 
 				emittance := obj.Material.Emittance(out, i.Basis)
-				s.Radiance.Add(emittance.Hadamard(&s.Weight))
-				// emittance := obj.Material.Emittance(out, i.Basis)
-				// s.Radiance.Add(emittance.Hadamard(&s.Weight))
+				s.Radiance = v3.Add(s.Radiance, v3.Hadamard(emittance, s.Weight))
 
 				// Russian roulette
 
@@ -83,13 +81,13 @@ func (pt *PathTraceSampler) Sample(r *geometry.Ray) Sample {
 
 				if bounces > 2 {
 					if rand.Float64() <= pMax {
-						prob.Scale(1 / pMax)
+						prob = v3.Scale(prob, 1/pMax)
 					} else {
 						break
 					}
 				}
 
-				s.Weight.Hadamard(&prob)
+				s.Weight = v3.Hadamard(s.Weight, prob)
 
 				in := obj.Material.Reflect(out, i.Basis)
 				r.Direction = in
