@@ -16,21 +16,30 @@ type Material interface {
 }
 
 type LambertianMaterial struct {
-	RadiantEmittance v3.V
-	Reflectivity     v3.V
+	emittance    v3.V
+	reflectivity v3.V
+	brdf         v3.V
 }
 
-func (m LambertianMaterial) BRDF(in, out v3.V, basis geometry.Basis) v3.V {
-	return v3.Scale(m.Reflectivity, math.Pi)
+func NewLambertianMaterial(emittance, reflectivity v3.V) *LambertianMaterial {
+	return &LambertianMaterial{
+		emittance:    emittance,
+		reflectivity: reflectivity,
+		brdf:         v3.Scale(reflectivity, math.Pi),
+	}
+}
+
+func (m *LambertianMaterial) BRDF(in, out v3.V, basis geometry.Basis) v3.V {
+	return m.brdf
 }
 
 // Emittance returns the radiant emittance (or exitance) in a given outgoing direction
-func (m LambertianMaterial) Emittance(out v3.V, basis geometry.Basis) v3.V {
-	return m.RadiantEmittance
+func (m *LambertianMaterial) Emittance(out v3.V, basis geometry.Basis) v3.V {
+	return m.emittance
 }
 
 // Reflect returns a incoming direction that would reflect to the given outgoing direction
-func (m LambertianMaterial) Reflect(out v3.V, basis geometry.Basis) v3.V {
+func (m *LambertianMaterial) Reflect(out v3.V, basis geometry.Basis) v3.V {
 	u1, u2 := rand.Float64(), rand.Float64()
 
 	sinTheta := math.Sqrt(u1)
@@ -39,14 +48,14 @@ func (m LambertianMaterial) Reflect(out v3.V, basis geometry.Basis) v3.V {
 	phi := 2 * math.Pi * u2
 
 	return v3.Normalize(basis.ToWorld(v3.V{
-		sinTheta * math.Cos(phi),
-		cosTheta,
-		sinTheta * math.Sin(phi),
+		X: sinTheta * math.Cos(phi),
+		Y: cosTheta,
+		Z: sinTheta * math.Sin(phi),
 	}))
 }
 
 // ReflectancePDF calculates the probability for a ray to be reflected
 // in the given outgoing direction
 func (m LambertianMaterial) ReflectancePDF(out v3.V, basis geometry.Basis) v3.V {
-	return m.Reflectivity
+	return m.reflectivity
 }
