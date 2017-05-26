@@ -25,12 +25,12 @@ func NewLambertianMaterial(emittance, reflectivity v3.V) *LambertianMaterial {
 	return &LambertianMaterial{
 		emittance:    emittance,
 		reflectivity: reflectivity,
-		brdf:         v3.Scale(reflectivity, math.Pi),
+		brdf:         v3.Scale(reflectivity, 1/math.Pi),
 	}
 }
 
 func (m *LambertianMaterial) BRDF(in, out v3.V, basis geometry.Basis) v3.V {
-	return m.brdf
+	return v3.Scale(m.brdf, math.Max(0, v3.Dot(basis.Normal, in)))
 }
 
 // Emittance returns the radiant emittance (or exitance) in a given outgoing direction
@@ -57,5 +57,36 @@ func (m *LambertianMaterial) Reflect(out v3.V, basis geometry.Basis) v3.V {
 // ReflectancePDF calculates the probability for a ray to be reflected
 // in the given outgoing direction
 func (m LambertianMaterial) ReflectancePDF(out v3.V, basis geometry.Basis) v3.V {
+	return m.reflectivity
+}
+
+type SpecularMaterial struct {
+	emittance    v3.V
+	reflectivity v3.V
+}
+
+func NewSpecularMaterial(emittance, reflectivity v3.V) *SpecularMaterial {
+	return &SpecularMaterial{
+		emittance:    emittance,
+		reflectivity: reflectivity,
+	}
+}
+
+func (m *SpecularMaterial) BRDF(in, out v3.V, basis geometry.Basis) v3.V {
+	return v3.ZERO
+}
+
+func (m *SpecularMaterial) Emittance(out v3.V, basis geometry.Basis) v3.V {
+	return m.emittance
+}
+
+func (m *SpecularMaterial) Reflect(out v3.V, basis geometry.Basis) v3.V {
+	return v3.Sub(
+		v3.Scale(basis.Normal, 2*math.Max(0, v3.Dot(basis.Normal, out))),
+		out,
+	)
+}
+
+func (m SpecularMaterial) ReflectancePDF(out v3.V, basis geometry.Basis) v3.V {
 	return m.reflectivity
 }
