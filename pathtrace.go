@@ -70,15 +70,37 @@ func (pt *PathTraceSampler) Sample(r *geometry.Ray) Sample {
 			if obj, ok := i.Geometry.(Renderable); ok {
 				out := v3.Negate(r.Direction)
 
+				//  Add the emittance of the intersected object's material
 				emittance := obj.Material.Emittance(out, i.Basis)
 				s.Radiance = v3.Add(s.Radiance, v3.Hadamard(emittance, s.Weight))
 
-				// Russian roulette
+				//  Add light paths from point lights
+				ld := v3.Sub(v3.V{0, 0.5, 0}, i.Point)
+				lr := &geometry.Ray{
+					Direction: v3.Normalize(ld),
+					Origin:    i.Point,
+					TMax:      v3.Len(ld),
+					TMin:      0,
+				}
+				if _, ok := pt.Geometry.Intersect(lr, pt.Epsilon); !ok {
+					in := lr.Direction
+					s.Radiance = v3.Add(
+						s.Radiance,
+						v3.Hadamard(
+							s.Weight,
+							v3.Hadamard(
+								obj.Material.BRDF(in, out, i.Basis),
+								v3.Scale(v3.V{1, 1, 1}, 1/v3.Len2(ld)),
+							),
+						),
+					)
+				}
 
 				// The probability for light to be reflected in this direction
 				prob := obj.Material.ReflectancePDF(out, i.Basis)
 				pMax := math.Max(math.Max(prob.X, prob.Y), prob.Z)
 
+				// Russian roulette (after a couple of bounces)
 				if bounces > 2 {
 					if rand.Float64() <= pMax {
 						prob = v3.Scale(prob, 1/pMax)
