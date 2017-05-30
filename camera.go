@@ -25,9 +25,9 @@ func (c *Camera) RayThrough(u, v float64) geometry.Ray {
 	target := v3.Add(
 		c.Origin,
 		c.Basis.ToLocal(v3.V{
-			u * c.FieldOfView * c.FocalLength,
-			v * c.FieldOfView * c.FocalLength,
-			c.FocalLength,
+			X: u * c.FieldOfView * c.FocalLength,
+			Y: v * c.FieldOfView * c.FocalLength,
+			Z: c.FocalLength,
 		}),
 	)
 	direction := v3.Normalize(v3.Sub(target, origin))
@@ -55,9 +55,9 @@ func (c *Camera) RandomOriginWithinAperture() v3.V {
 	r := u2 * c.Aperture
 	theta := u1 * 2 * math.Pi
 	localPoint := v3.V{
-		math.Cos(theta) * r,
-		math.Sin(theta) * r,
-		0,
+		X: math.Cos(theta) * r,
+		Y: math.Sin(theta) * r,
+		Z: 0,
 	}
 	return v3.Add(
 		c.Basis.ToLocal(localPoint),

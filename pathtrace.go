@@ -75,7 +75,7 @@ func (pt *PathTraceSampler) Sample(r *geometry.Ray) Sample {
 				s.Radiance = v3.Add(s.Radiance, v3.Hadamard(emittance, s.Weight))
 
 				//  Add light paths from point lights
-				ld := v3.Sub(v3.V{0, 0.5, 0}, i.Point)
+				ld := v3.Sub(v3.V{X: -0.5, Y: -0.5, Z: -0.5}, i.Point)
 				lr := &geometry.Ray{
 					Direction: v3.Normalize(ld),
 					Origin:    i.Point,
@@ -90,7 +90,7 @@ func (pt *PathTraceSampler) Sample(r *geometry.Ray) Sample {
 							s.Weight,
 							v3.Hadamard(
 								obj.Material.BRDF(in, out, i.Basis),
-								v3.Scale(v3.V{1, 1, 1}, 1/v3.Len2(ld)),
+								v3.Scale(v3.V{X: 1, Y: 1, Z: 1}, 1/v3.Len2(ld)),
 							),
 						),
 					)
