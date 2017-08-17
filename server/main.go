@@ -2,57 +2,14 @@ package main
 
 import (
 	"fmt"
-	"image"
-	"image/color"
 	"image/png"
 	"log"
-	"math/rand"
 	"net/http"
 
 	sundog "github.com/sporsh/gosundog"
 	"github.com/sporsh/gosundog/geometry"
 	"github.com/sporsh/gosundog/v3"
 )
-
-type PathTraceImage struct {
-	rect image.Rectangle
-	sundog.PathTraceSampler
-	camera sundog.Camera
-}
-
-func NewPathTraceImage(g geometry.Intersectable, c sundog.Camera, width, height int) *PathTraceImage {
-	return &PathTraceImage{
-		rect: image.Rect(0, 0, width, height),
-		PathTraceSampler: sundog.PathTraceSampler{
-			Geometry: g,
-			Epsilon:  0.001,
-		},
-		camera: c,
-	}
-}
-
-func (img PathTraceImage) At(x, y int) color.Color {
-	radiance := v3.V{0, 0, 0}
-	numSamples := 50
-	for sample := 0; sample < numSamples; sample++ {
-		u := 2*(float64(x)+rand.Float64())/float64(img.rect.Dx()-1) - 1
-		v := 1 - 2*(float64(y)+rand.Float64())/float64(img.rect.Dy()-1)
-		r := img.camera.RayThrough(u, v)
-		sampleRadiance := img.Sample(r).Radiance
-		radiance.Add(&sampleRadiance)
-	}
-	return sundog.Sample{
-		Radiance: *radiance.Scale(1.0 / float64(numSamples)),
-	}
-}
-
-func (img PathTraceImage) ColorModel() color.Model {
-	return color.RGBAModel
-}
-
-func (img PathTraceImage) Bounds() image.Rectangle {
-	return img.rect
-}
 
 func main() {
 	width, height := 400, 400
@@ -128,7 +85,7 @@ func main() {
 			FieldOfView: 1,
 			FocalLength: 2,
 		}
-		img := NewPathTraceImage(g, c, width, height)
+		img := sundog.NewPathTraceImage(&g, c, width, height)
 		log.Println("Starting...")
 		if err := png.Encode(w, img); err != nil {
 			fmt.Fprintln(w, err)

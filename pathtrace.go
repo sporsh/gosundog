@@ -11,29 +11,34 @@ import (
 )
 
 type PathTraceImage struct {
-	rect image.Rectangle
 	PathTraceSampler
-	camera Camera
+	rect       image.Rectangle
+	camera     Camera
+	numSamples int
 }
 
-func NewPathTraceImage(g geometry.Intersectable, c Camera, width, height int) *PathTraceImage {
+func NewPathTraceImage(g geometry.Intersectable, c Camera, width, height, numSamples, maxBounces int) *PathTraceImage {
 	return &PathTraceImage{
 		rect: image.Rect(0, 0, width, height),
 		PathTraceSampler: PathTraceSampler{
-			Geometry: g,
-			Epsilon:  0.001,
+			Geometry:   g,
+			Epsilon:    0.002,
+			maxBounces: maxBounces,
 		},
-		camera: c,
+		camera:     c,
+		numSamples: numSamples,
 	}
 }
 
 func (img *PathTraceImage) At(x, y int) color.Color {
 	radiance := v3.V{X: 0, Y: 0, Z: 0}
-	numSamples := 50
+	numSamples := img.numSamples
 	for sample := 0; sample < numSamples; sample++ {
 		u := 2*(float64(x)+rand.Float64())/float64(img.rect.Dx()-1) - 1
 		v := 1 - 2*(float64(y)+rand.Float64())/float64(img.rect.Dy()-1)
 		r := img.camera.RayThrough(u, v)
+		// r.TMin = img.Epsilon
+		// r.TMax = 10
 		sampleRadiance := img.Sample(&r).Radiance
 		radiance = v3.Add(radiance, sampleRadiance)
 	}
@@ -55,8 +60,9 @@ func (img *PathTraceImage) Opaque() bool {
 }
 
 type PathTraceSampler struct {
-	Geometry geometry.Intersectable
-	Epsilon  float64
+	Geometry   geometry.Intersectable
+	Epsilon    float64
+	maxBounces int
 }
 
 func (pt *PathTraceSampler) Sample(r *geometry.Ray) Sample {
@@ -64,7 +70,7 @@ func (pt *PathTraceSampler) Sample(r *geometry.Ray) Sample {
 		Radiance: v3.ZERO,
 		Weight:   v3.V{X: 1, Y: 1, Z: 1},
 	}
-	maxBounces := 6
+	maxBounces := pt.maxBounces
 	for bounces := 0; bounces < maxBounces; bounces++ {
 		if i, ok := pt.Geometry.Intersect(r, pt.Epsilon); ok {
 			if obj, ok := i.Geometry.(Renderable); ok {

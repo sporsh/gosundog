@@ -30,6 +30,7 @@ func NewLambertianMaterial(emittance, reflectivity v3.V) *LambertianMaterial {
 }
 
 func (m *LambertianMaterial) BRDF(in, out v3.V, basis geometry.Basis) v3.V {
+	// return m.brdf
 	return v3.Scale(m.brdf, math.Max(0, v3.Dot(basis.Normal, in)))
 }
 

@@ -15,9 +15,10 @@ import (
 func main() {
 	rand.Seed(0)
 
-	lightMaterial := sundog.NewLambertianMaterial(v3.V{0.5, 0.5, 2}, v3.V{0.8, 0.8, 0.8})
+	// lightMaterial := sundog.NewLambertianMaterial(v3.V{5, 5, 5}, v3.V{0.8, 0.8, 0.8})
+	// lightMaterial := sundog.NewLambertianMaterial(v3.V{5, 5, 5}, v3.V{0.8, 0.8, 0.8})
 	whiteMaterial := sundog.NewLambertianMaterial(v3.ZERO, v3.V{0.8, 0.8, 0.8})
-	mirrorMaterial := sundog.NewSpecularMaterial(v3.ZERO, v3.V{0.8, 0.8, 0.8})
+	// mirrorMaterial := sundog.NewSpecularMaterial(v3.ZERO, v3.V{0.8, 0.8, 0.8})
 	redMaterial := sundog.NewLambertianMaterial(v3.ZERO, v3.V{0.75, 0.25, 0.25})
 	greenMaterial := sundog.NewLambertianMaterial(v3.ZERO, v3.V{0.25, 0.75, 0.25})
 
@@ -26,18 +27,26 @@ func main() {
 		// 	Intersectable: geometry.NewSphere(v3.V{-0.55, -0.5, 0}, 0.25),
 		// 	Material:      redMaterial,
 		// },
+
+		// sundog.Renderable{
+		// 	Intersectable: geometry.NewSphere(v3.V{-0.5, -0.5, 0}, .3),
+		// 	Material:      whiteMaterial,
+		// },
+		// sundog.Renderable{
+		// 	Intersectable: geometry.NewSphere(v3.V{0, 0.15, 0.3}, .3),
+		// 	Material:      mirrorMaterial,
+		// },
+		// sundog.Renderable{
+		// 	Intersectable: geometry.NewSphere(v3.V{0.5, -0.5, -0.5}, .3),
+		// 	// Intersectable: geometry.NewSphere(v3.V{0.5, -0.5, 0}, .3),
+		// 	Material: lightMaterial,
+		// },
+
 		sundog.Renderable{
-			Intersectable: geometry.NewSphere(v3.V{-0.5, -0.5, 0}, .3),
+			Intersectable: geometry.NewTorus(0.6, 0.4),
 			Material:      whiteMaterial,
 		},
-		sundog.Renderable{
-			Intersectable: geometry.NewSphere(v3.V{0, 0.15, 0.3}, .3),
-			Material:      mirrorMaterial,
-		},
-		sundog.Renderable{
-			Intersectable: geometry.NewSphere(v3.V{0.5, -0.5, 0}, .3),
-			Material:      lightMaterial,
-		},
+
 		// sundog.Renderable{
 		// 	Intersectable: geometry.NewSphere(v3.V{0.55, -0.5, 0}, 0.25),
 		// 	Material:      greenMaterial,
@@ -90,7 +99,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	img := sundog.NewPathTraceImage(g, c, 400, 400)
+	img := sundog.NewPathTraceImage(g, c, 400, 400, 50, 6)
 
 	t0 := time.Now()
 	png.Encode(f, img)
