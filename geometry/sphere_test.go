@@ -9,7 +9,6 @@ import (
 )
 
 func TestSphereIntersect(t *testing.T) {
-	epsilon := 0.01
 	r := geometry.Ray{
 		Origin:    v3.V{0, 0, 0},
 		Direction: v3.V{0, 0, 1},
@@ -21,7 +20,7 @@ func TestSphereIntersect(t *testing.T) {
 		1,
 	)
 
-	if i, ok := s.Intersect(&r, epsilon); !ok {
+	if i, ok := s.Intersect(&r); !ok {
 		t.Log(i)
 		t.Fail()
 	}

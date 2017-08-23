@@ -22,7 +22,7 @@ func NewPathTraceImage(g geometry.Intersectable, c Camera, width, height, numSam
 		rect: image.Rect(0, 0, width, height),
 		PathTraceSampler: PathTraceSampler{
 			Geometry:   g,
-			Epsilon:    0.002,
+			Epsilon:    0.001,
 			maxBounces: maxBounces,
 		},
 		camera:     c,
@@ -36,9 +36,7 @@ func (img *PathTraceImage) At(x, y int) color.Color {
 	for sample := 0; sample < numSamples; sample++ {
 		u := 2*(float64(x)+rand.Float64())/float64(img.rect.Dx()-1) - 1
 		v := 1 - 2*(float64(y)+rand.Float64())/float64(img.rect.Dy()-1)
-		r := img.camera.RayThrough(u, v)
-		// r.TMin = img.Epsilon
-		// r.TMax = 10
+		r := img.camera.RayThrough(u, v, img.Epsilon)
 		sampleRadiance := img.Sample(&r).Radiance
 		radiance = v3.Add(radiance, sampleRadiance)
 	}
@@ -72,7 +70,7 @@ func (pt *PathTraceSampler) Sample(r *geometry.Ray) Sample {
 	}
 	maxBounces := pt.maxBounces
 	for bounces := 0; bounces < maxBounces; bounces++ {
-		if i, ok := pt.Geometry.Intersect(r, pt.Epsilon); ok {
+		if i, ok := pt.Geometry.Intersect(r); ok {
 			if obj, ok := i.Geometry.(Renderable); ok {
 				out := v3.Negate(r.Direction)
 
@@ -85,10 +83,10 @@ func (pt *PathTraceSampler) Sample(r *geometry.Ray) Sample {
 				lr := &geometry.Ray{
 					Direction: v3.Normalize(ld),
 					Origin:    i.Point,
-					TMax:      v3.Len(ld),
-					TMin:      0,
+					TMax:      v3.Len(ld) - pt.Epsilon,
+					TMin:      pt.Epsilon,
 				}
-				if _, ok := pt.Geometry.Intersect(lr, pt.Epsilon); !ok {
+				if _, ok := pt.Geometry.Intersect(lr); !ok {
 					in := lr.Direction
 					s.Radiance = v3.Add(
 						s.Radiance,

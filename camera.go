@@ -20,7 +20,7 @@ type Camera struct {
 // RayThrough computes a ray in the world vector space
 // that corresponds to the u, v screen coordinates between [-1, 1]
 // as seen in the visible field from of cacmera
-func (c *Camera) RayThrough(u, v float64) geometry.Ray {
+func (c *Camera) RayThrough(u, v, epsilon float64) geometry.Ray {
 	origin := c.RandomOriginWithinAperture()
 	target := v3.Add(
 		c.Origin,
@@ -35,7 +35,7 @@ func (c *Camera) RayThrough(u, v float64) geometry.Ray {
 	return geometry.Ray{
 		Direction: direction,
 		Origin:    origin,
-		TMin:      0,
+		TMin:      epsilon,
 		TMax:      math.Inf(1),
 	}
 }

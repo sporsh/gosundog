@@ -18,17 +18,17 @@ func NewDistanceField(distance DistanceFunction) *DistanceField {
 	}
 }
 
-func (df *DistanceField) Intersect(r *Ray, epsilon float64) (i Intersection, ok bool) {
+func (df *DistanceField) Intersect(r *Ray) (i Intersection, ok bool) {
 	var distance float64
 	i.Point = r.Origin
 
-	for i.T = r.TMin + epsilon; i.T < math.Min(r.TMax, 10); i.T += distance {
+	for i.T = r.TMin; i.T < math.Min(r.TMax, 10); i.T += distance {
 		// i.Point = v3.Add(r.Origin, v3.Scale(r.Direction, i.T))
 		i.Point = v3.Add(i.Point, v3.Scale(r.Direction, i.T))
-		distance = math.Abs(df.distance(i.Point))
-		if distance < epsilon {
+		distance = (df.distance(i.Point))
+		if distance <= 0 {
 			// i.Geometry = df
-			i.Basis = ArbritraryBasisForNormal(df.getNormal(i.Point, epsilon))
+			i.Basis = ArbritraryBasisForNormal(v3.Negate(df.getNormal(i.Point)))
 			// fmt.Println("GOT INTERSECTION", i)
 			return i, true
 		}
@@ -36,7 +36,7 @@ func (df *DistanceField) Intersect(r *Ray, epsilon float64) (i Intersection, ok 
 	return i, false
 }
 
-func (df *DistanceField) getNormal(point v3.V, epsilon float64) v3.V {
+func (df *DistanceField) getNormal(point v3.V) v3.V {
 	d := func(v v3.V) float64 {
 		// point = v3.Add(point, v)
 		// return df.distance(point)
@@ -44,9 +44,9 @@ func (df *DistanceField) getNormal(point v3.V, epsilon float64) v3.V {
 	}
 
 	return v3.Normalize(v3.V{
-		X: d(v3.V{X: -epsilon, Y: 0, Z: 0}) - d(v3.V{X: epsilon, Y: 0, Z: 0}),
-		Y: d(v3.V{X: 0, Y: -epsilon, Z: 0}) - d(v3.V{X: 0, Y: epsilon, Z: 0}),
-		Z: d(v3.V{X: 0, Y: 0, Z: -epsilon}) - d(v3.V{X: 0, Y: 0, Z: epsilon}),
+		X: d(v3.V{X: -0.0001, Y: 0, Z: 0}) - d(v3.V{X: 0.0001, Y: 0, Z: 0}),
+		Y: d(v3.V{X: 0, Y: -0.0001, Z: 0}) - d(v3.V{X: 0, Y: 0.0001, Z: 0}),
+		Z: d(v3.V{X: 0, Y: 0, Z: -0.0001}) - d(v3.V{X: 0, Y: 0, Z: 0.0001}),
 	})
 }
 
