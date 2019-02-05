@@ -38,6 +38,10 @@ func (s *Sphere) Intersect(r *Ray) (i Intersection, ok bool) {
 	if i.T < 0 {
 		// inside = true
 		i.T = -b + sqrtDiscr
+		// if i.T < r.TMin {
+		// 	// Miss: ray origin considered too close to spehere
+		// 	return i, false
+		// }
 	}
 
 	if i.T < r.TMin || i.T > r.TMax {

@@ -15,10 +15,11 @@ import (
 func main() {
 	rand.Seed(0)
 
-	// lightMaterial := sundog.NewLambertianMaterial(v3.V{5, 5, 5}, v3.V{0.8, 0.8, 0.8})
-	// lightMaterial := sundog.NewLambertianMaterial(v3.V{5, 5, 5}, v3.V{0.8, 0.8, 0.8})
+	// lightMaterial := sundog.NewLambertianMaterial(v3.V{0.5, 0.5, 2}, v3.V{0.8, 0.8, 0.8})
+	lightMaterial := sundog.NewLambertianMaterial(v3.V{2, 2, 2}, v3.V{0, 0, 0})
 	whiteMaterial := sundog.NewLambertianMaterial(v3.ZERO, v3.V{0.8, 0.8, 0.8})
-	// mirrorMaterial := sundog.NewSpecularMaterial(v3.ZERO, v3.V{0.8, 0.8, 0.8})
+	mirrorMaterial := sundog.NewSpecularMaterial(v3.ZERO, v3.V{0.8, 0.8, 0.8})
+	glassMaterial := sundog.NewRefractiveMaterial(v3.ZERO, v3.V{0.8, 0.8, 0.8})
 	redMaterial := sundog.NewLambertianMaterial(v3.ZERO, v3.V{0.75, 0.25, 0.25})
 	greenMaterial := sundog.NewLambertianMaterial(v3.ZERO, v3.V{0.25, 0.75, 0.25})
 
@@ -28,24 +29,24 @@ func main() {
 		// 	Material:      redMaterial,
 		// },
 
+		sundog.Renderable{
+			Intersectable: geometry.NewSphere(v3.V{-0.5, -0.5, 0}, .3),
+			Material:      glassMaterial,
+		},
+		sundog.Renderable{
+			Intersectable: geometry.NewSphere(v3.V{0, 0.15, 0.3}, .3),
+			Material:      mirrorMaterial,
+		},
+		sundog.Renderable{
+			Intersectable: geometry.NewSphere(v3.V{0.5, -0.5, -1}, .3),
+			Material:      lightMaterial,
+		},
+
 		// sundog.Renderable{
-		// 	Intersectable: geometry.NewSphere(v3.V{-0.5, -0.5, 0}, .3),
+		// 	Intersectable: geometry.NewTorus88(0.4, 0.4),
+		// 	// Intersectable: geometry.NewDSphere(0.6),
 		// 	Material:      whiteMaterial,
 		// },
-		// sundog.Renderable{
-		// 	Intersectable: geometry.NewSphere(v3.V{0, 0.15, 0.3}, .3),
-		// 	Material:      mirrorMaterial,
-		// },
-		// sundog.Renderable{
-		// 	Intersectable: geometry.NewSphere(v3.V{0.5, -0.5, -0.5}, .3),
-		// 	// Intersectable: geometry.NewSphere(v3.V{0.5, -0.5, 0}, .3),
-		// 	Material: lightMaterial,
-		// },
-
-		sundog.Renderable{
-			Intersectable: geometry.NewTorus(0.6, 0.4),
-			Material:      whiteMaterial,
-		},
 
 		// sundog.Renderable{
 		// 	Intersectable: geometry.NewSphere(v3.V{0.55, -0.5, 0}, 0.25),

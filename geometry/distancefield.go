@@ -50,6 +50,14 @@ func (df *DistanceField) getNormal(point v3.V) v3.V {
 	})
 }
 
+func NewDSphere(r float64) *DistanceField {
+	return &DistanceField{
+		distance: func(point v3.V) float64 {
+			return v3.Len(point) - r
+		},
+	}
+}
+
 func NewTorus(major, minor float64) *DistanceField {
 	return &DistanceField{
 		distance: func(point v3.V) float64 {
